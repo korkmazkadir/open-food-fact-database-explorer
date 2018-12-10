@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <title>The d3 test</title>
+      <style>
+      .chart {
+
+      }
+
+      .main text {
+        font: 10px sans-serif;
+      }
+
+      .axis line, .axis path {
+        shape-rendering: crispEdges;
+        stroke: black;
+        fill: none;
+      }
+
+      .zoom-icon{
+        cursor: pointer;
+      }
+
+      .plot{
+        cursor: pointer;
+      }
+
+      .selected-plot{
+        stroke: #B22F00;
+      }
+
+      circle {
+        fill: steelblue;
+      }
+
+      .axis-label{
+        font-size: 1.1em !important;
+      }
+
+      </style>
+
+      <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+      <script type="text/javascript" src="./ScatterPlot.js"></script>
+      <script type="text/javascript" src="./ScatterPlotMatrix.js"></script>
+
+    </head>
+    <body>
+
+      <div id="chart-container">
+
+      </div>
+
+
+      <script type="text/javascript">
+
+
+        const scatterPlotMatrix = new ScatterPlotMatrix("chart-container",850,650);
+        scatterPlotMatrix.plotAll();
+
+      </script>
+
+    </body>
+  </html>

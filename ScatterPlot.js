@@ -41,6 +41,15 @@ function ScatterPlot(rootGroupElementId){
           	.attr('class', 'main axis date')
           	.call(xAxis);
 
+          // text label for the x axis
+          main.append("text")
+              .attr("transform",
+                    "translate(" + (width/2) + " ," +
+                                   (height + margin.top + 20) + ")")
+              .attr("class", "axis-label")
+              .style("text-anchor", "middle")
+              .text("Date");
+
           // draw the y axis
           var yAxis = d3.svg.axis()
           	.scale(y)
@@ -50,6 +59,17 @@ function ScatterPlot(rootGroupElementId){
           	.attr('transform', 'translate(0,0)')
           	.attr('class', 'main axis date')
           	.call(yAxis);
+
+          // text label for the y axis
+          main.append("text")
+              .attr("transform", "rotate(-90)")
+              .attr("y", 10 - margin.left)
+              .attr("x",0 - (height / 2))
+              .attr("dy", "1em")
+              .attr("class", "axis-label")
+              .style("text-anchor", "middle")
+              .text("Value");
+
 
           var g = main.append("svg:g");
 
