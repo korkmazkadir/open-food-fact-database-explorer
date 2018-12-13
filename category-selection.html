@@ -1,0 +1,466 @@
+<html>
+
+<head>
+
+  <!-- Jquery -->
+
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+    crossorigin="anonymous"></script>
+
+  <!-- Bootstrap -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js" integrity="sha384-pjaaA8dDz/5BgdFUPX6M/9SUZv4d12SUPF0axWc+VRZkx5xU3daN+lYb49+Ax+Tl" crossorigin="anonymous"></script>
+
+  <!-- AngularJS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
+  <style>
+
+    .table-container{
+      overflow-x: auto;
+      overflow-y: auto;
+    }
+
+    .constrained {
+        margin: 10px;
+        padding: 10px;
+        height: 300px;
+        overflow: scroll;
+        border: 1px solid lightgray;
+    }
+
+    .selectable-table tbody>tr:hover {
+          background-color: #ffff99 !important;
+          cursor: pointer;
+    }
+
+    .disabled{
+       pointer-events: none;
+       opacity: 0.5;
+    }
+
+    #category-selection-button{
+      font-size: 1.5em !important;
+    }
+
+
+  </style>
+
+  <!-- Angular JS Slider -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.6.0/rzslider.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.6.0/rzslider.min.js"></script>
+
+  <!-- Custom -->
+  <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+
+  <title>Open Food Fact Data Selection</title>
+</head>
+
+<body>
+  <div id="app-container" class="container" ng-app="myApp" ng-controller="myCtrl">
+
+    <div class="row">
+        <div class="col-1">
+        </div>
+        <div class="col-11">
+          <h1 align="center" style="margin-top : 20px;" >Open Food Fact Data Selection</h1>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+      <div class="col">
+        <div class="form-group">
+
+          <button id="category-selection-button" type="button" class="btn btn-info btn-block" data-toggle="modal" data-target=".bd-example-modal-lg">{{ selectedCategoryName ? selectedCategoryName : "Select a product category" }}</button>
+
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row" style="margin-top:10px; height:550px;">
+      <div id="table-container" class="col table-container">
+          <table class="table table-striped selectable-table" >
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th ng-repeat="column in columns" ng-bind="column.name" ng-show="column.isVisible"></th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="product in productList | limitTo:visibleProductCount track by $index" ng-click="openProductPage(product.code)">
+                  <th scope="row">{{$index + 1}}</th>
+                  <td ng-repeat="column in columns" ng-bind="getColumnValue($parent.product,column) " ng-show="column.isVisible"></td>
+                </tr>
+            </tbody>
+          </table>
+      </div>
+    </div>
+
+
+    <hr />
+
+    <div id="control-container" class="row solid-border">
+
+        <div class="col-9">
+            <rzslider rz-slider-model="slider2.min" rz-slider-high="slider2.max"  rz-slider-options="slider2.options" ></rzslider>
+        </div>
+
+        <div class="col-3">
+          <button type="button" class="btn btn-link btn-block" ng-click="showColumnSelectionModal()">Select Columns</button>
+        </div>
+
+    </div>
+
+    <hr />
+
+    <div class="row" style="margin-top:10px;">
+      <div class="col">
+        <button type="button" class="btn btn-primary btn-block" ng-click="createPlot()">Create New Graph</button>
+      </div>
+    </div>
+
+
+    <div id="product-selection-modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Product Category Selection</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <div class="row" style="margin-top:10px; height:600px;">
+              <div class="table-container" >
+
+                <table class="table table-striped selectable-table" >
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Category Name</th>
+                      <th scope="col">Number of Products</th>
+                    </tr>
+                  </thead>
+                  <tbody >
+                    <tr ng-repeat="category in categories" ng-click="selectProductCategory(category.categoryName)">
+                      <th scope="row">{{$index + 1}}</th>
+                      <td>{{category.categoryName}}</td>
+                      <td>{{category.numberOfProducts}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+
+
+    <div id="column-selection-modal" class="modal fade bd-example-modal-lg" tabindex="-2" role="dialog"  aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Product Data Column Selection</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <div class="row" style="margin-top:10px; height:600px;">
+              <div class=" col table-container" >
+
+                <table class="table table-striped" >
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Column Name</th>
+                      <th scope="col">Selected</th>
+                      <th scope="col">Availability</th>
+                    </tr>
+                  </thead>
+                  <tbody >
+                    <tr ng-repeat="column in columns track by $index" ng-class=" isColumnDisabled(column) ? 'disabled' : '' ">
+                      <th scope="row">{{$index + 1}}</th>
+                      <td>{{column.name}}</td>
+                      <td><input type="checkbox" ng-model="column.isVisible"></td>
+                      <td>{{column.availableRowCount}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <div id="message-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Information</h5>
+          </div>
+          <div class="modal-body">
+            <div id="message-div" class="alert alert-success" role="alert">
+            </div>
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+</body>
+
+
+
+
+<script type="text/javascript">
+
+  var app = angular.module("myApp", ["rzModule"]);
+  app.controller("myCtrl", function($scope,$window,$http,$timeout) {
+
+      $scope.getNumber = function(num) {
+        var array = [];
+        for(var i = 0; i< 30; i++){
+          array.push(i);
+        }
+          return array;
+      }
+
+      $scope.slider2 = {
+      min: 10,
+      max: 500,
+      options: {
+          id : "slider-x",
+          floor: 10,
+          ceil: 500,
+          vertical: false
+        }
+      };
+
+
+    $scope.openProductPage = function(productCode){
+      $window.open("https://world.openfoodfacts.org/product/" + productCode, '_blank');
+    }
+
+    $scope.createPlot = function(){
+        $window.open('./plot.html', '_blank');
+    }
+
+    $scope.getColumnValue = function(product, column){
+        return product[column.name];
+    }
+
+    $scope.isColumnDisabled = function (column){
+        console.log("Column : " + JSON.stringify(column));
+        const numberOfProducts = $scope.productList.length;
+        if( Math.floor(100 * column.availableRowCount / numberOfProducts) < 1){
+          return true;
+        }
+
+        return false;
+    }
+
+    var messageCount = 0;
+    const messageDiv = document.getElementById('message-div');
+    function showProgressMessage(message){
+        $timeout(function(){
+            messageDiv.innerHTML = message;
+            $('#message-modal').modal('toggle');
+            messageCount++;
+        });
+    }
+
+    function hideProgressMessage(){
+      $timeout(function(){
+        messageCount--;
+        if(messageCount === 0){
+          $('#message-modal').modal('toggle');
+        }
+      });
+    }
+
+
+    $scope.visibleProductCount = 0;
+    jQuery(function($) {
+        $('#table-container').on('scroll', function() {
+            if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+                console.log('end reached');
+                $timeout(function(){
+                    $scope.visibleProductCount = $scope.visibleProductCount + 100;
+                }, 0);
+            }
+        })
+    });
+
+
+    $scope.showColumnSelectionModal = function(){
+      $('#column-selection-modal').modal('toggle');
+      console.log("Columns : " + $scope.columns);
+    }
+
+    function calculateColumnStatistics(product){
+        $scope.columns.forEach((column)=>{
+          const columnValue = product[column.name];
+          if(columnValue){
+            column.availableRowCount += 1;
+          }
+        });
+    }
+
+    $scope.productList = [];
+    function recalculateProductList(productCategoryName){
+
+      const localArray = [];
+      //$scope.productList = [];
+      var productCodeList = $scope.productCategory[productCategoryName];
+      console.log("Selected category name : " + productCategoryName + " size : " + productCodeList.length);
+
+      $scope.columns.forEach((column)=>{column.availableRowCount = 0;});
+
+      productCodeList.forEach(function(productCode) {
+            const product = $scope.products[productCode];
+            localArray.push(product)
+            calculateColumnStatistics(product);
+      });
+
+      $scope.productList = localArray;
+      $scope.visibleProductCount = 100;
+    }
+
+
+    $scope.selectedCategoryName;
+    $scope.selectProductCategory = function(categoryName){
+      $scope.selectedCategoryName = categoryName;
+      $('#product-selection-modal').modal('toggle');
+      recalculateProductList($scope.selectedCategoryName);
+    }
+
+    $scope.sortByCategorName = false;
+    $scope.productCategory = {};
+    $scope.categories;
+
+    function createOrderedcategories(){
+      $scope.categories = Object.entries($scope.productCategory).map( ([key, value]) => ({ categoryName : key, numberOfProducts: value.length }) )
+      $scope.categories.sort(function(a,b){
+        if (a.numberOfProducts > b.numberOfProducts)
+          return -1;
+        if (a.numberOfProducts < b.numberOfProducts)
+          return 1;
+        return 0;
+      });
+    }
+
+    function addToCategory(productCode, categoryName){
+      if(!$scope.productCategory[categoryName]){
+        $scope.productCategory[categoryName] = [];
+      }
+      $scope.productCategory[categoryName].push(productCode);
+    }
+
+    function parseProductCategoryFile(data){
+        var lines = data.split("\n");
+        //removes header line
+        lines.shift();
+        lines.forEach(function(line) {
+            var tokens = line.split("\t");
+            addToCategory(tokens[0],tokens[1]);
+        });
+
+        createOrderedcategories();
+        console.log("End of prodect categories file parse");
+    }
+
+
+    function loadProductCategoryData(){
+      showProgressMessage("Loading Data");
+      $http.get("./tsv/products_categories_full.tsv")
+      .then(function(response) {
+          parseProductCategoryFile(response.data);
+          hideProgressMessage();
+      });
+    }
+
+    loadProductCategoryData();
+
+    /////////////////////////////////
+    /////////////////////////////////
+
+
+    $scope.columns = [];
+    $scope.products = {};
+    const defaultColumns = ["name","n_additives","nutriscore","energy_100g"];
+
+    function parseProductFile(data){
+        var lines = data.split("\n");
+        //removes header line
+        const columns = lines.shift().split("\t");
+
+        columns.forEach(function(column){
+          var columnObject = {name : column, isVisible : false, availableRowCount : 0};
+          if((defaultColumns.indexOf(column) > -1)){
+            columnObject.isVisible = true;
+          }
+          $scope.columns.push(columnObject);
+        })
+
+        lines.forEach(function(line) {
+            var tokens = line.split("\t");
+            var obj = {};
+            for(var i = 0; i < tokens.length; i++){
+              obj[columns[i]] = tokens[i];
+            }
+            $scope.products[obj.code] = obj;
+        });
+
+        createOrderedcategories();
+        console.log("End of product list parse");
+    }
+
+
+    function loadProductData(){
+      showProgressMessage("Loading Data");
+      $http.get("./tsv/products.tsv")
+      .then(function(response) {
+          parseProductFile(response.data);
+          hideProgressMessage();
+      });
+    }
+
+    loadProductData();
+
+  });
+
+
+</script>
+
+</html>

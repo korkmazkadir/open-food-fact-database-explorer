@@ -1,0 +1,576 @@
+<html>
+
+<head>
+
+  <!-- Jquery -->
+
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+    crossorigin="anonymous"></script>
+
+  <!-- Bootstrap -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js" integrity="sha384-pjaaA8dDz/5BgdFUPX6M/9SUZv4d12SUPF0axWc+VRZkx5xU3daN+lYb49+Ax+Tl" crossorigin="anonymous"></script>
+
+  <!-- AngularJS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
+  <style>
+
+    .table-container{
+      overflow-x: auto;
+      overflow-y: auto;
+    }
+
+    .constrained {
+        margin: 10px;
+        padding: 10px;
+        height: 300px;
+        overflow: scroll;
+        border: 1px solid lightgray;
+    }
+
+    .selectable-table tbody>tr:hover {
+          background-color: #ffff99 !important;
+          cursor: pointer;
+    }
+
+    #category-selection-button{
+      font-size: 1.5em !important;
+    }
+
+
+  </style>
+
+  <!-- Angular JS Slider -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.6.0/rzslider.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.6.0/rzslider.min.js"></script>
+
+  <!-- Custom -->
+  <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+
+  <title>Open Food Fact Data Selection</title>
+</head>
+
+<body>
+  <div id="app-container" class="container" ng-app="myApp" ng-controller="myCtrl">
+
+    <div class="row">
+        <div class="col-1">
+        </div>
+        <div class="col-11">
+          <h1 align="center" style="margin-top : 20px;" >Open Food Fact Data Selection</h1>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+      <div class="col">
+        <div class="form-group">
+
+          <button id="category-selection-button" type="button" class="btn btn-info btn-block" data-toggle="modal" data-target=".bd-example-modal-lg">{{ selectedCategoryName ? selectedCategoryName : "Select a product category" }}</button>
+
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row" style="margin-top:10px; height:600px;">
+      <div id="table-container" class="col table-container">
+          <table class="table table-striped" >
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th > name</th>
+                <th > n_additives</th>
+                <th > nutriscore</th>
+                <th > energy_100g</th>
+                <th > energy-from-fat_100g</th>
+                <th > fat_100g</th>
+                <th > saturated-fat_100g</th>
+                <th > monounsaturated-fat_100g</th>
+                <th > polyunsaturated-fat_100g</th>
+                <th > omega-3-fat_100g</th>
+                <th > omega-6-fat_100g</th>
+                <th > omega-9-fat_100g</th>
+                <th > trans-fat_100g</th>
+                <th > cholesterol_100g</th>
+                <th > carbohydrates_100g</th>
+                <th > sugars_100g</th>
+                <th > starch_100g</th>
+                <th > polyols_100g</th>
+                <th > fiber_100g</th>
+                <th > proteins_100g</th>
+                <th > casein_100g</th>
+                <th > serum-proteins_100g</th>
+                <th > nucleotides_100g</th>
+                <th > salt_100g</th>
+                <th > sodium_100g</th>
+                <th > alcohol_100g</th>
+                <th > vitamin-a_100g</th>
+                <th > beta-carotene_100g</th>
+                <th > vitamin-d_100g</th>
+                <th > vitamin-e_100g</th>
+                <th > vitamin-k_100g</th>
+                <th > vitamin-c_100g</th>
+                <th > vitamin-b1_100g</th>
+                <th > vitamin-b2_100g</th>
+                <th > vitamin-pp_100g</th>
+                <th > vitamin-b6_100g</th>
+                <th > vitamin-b9_100g</th>
+                <th > folates_100g</th>
+                <th > vitamin-b12_100g</th>
+                <th > biotin_100g</th>
+                <th > pantothenic-acid_100g</th>
+                <th > silica_100g</th>
+                <th > bicarbonate_100g</th>
+                <th > potassium_100g</th>
+                <th > chloride_100g</th>
+                <th > calcium_100g</th>
+                <th > phosphorus_100g</th>
+                <th > iron_100g</th>
+                <th > magnesium_100g</th>
+                <th > zinc_100g</th>
+                <th > copper_100g</th>
+                <th > manganese_100g</th>
+                <th > fluoride_100g</th>
+                <th > selenium_100g</th>
+                <th > chromium_100g</th>
+                <th > molybdenum_100g</th>
+                <th > iodine_100g</th>
+                <th > caffeine_100g</th>
+                <th > taurine_100g</th>
+                <th > ph_100g</th>
+                <th > fruits-vegetables-nuts_100g</th>
+                <th > fruits-vegetables-nuts-estimate_100g</th>
+                <th > collagen-meat-protein-ratio_100g</th>
+                <th > cocoa_100g</th>
+                <th > chlorophyl_100g</th>
+                <th > carbon-footprint_100g</th>
+                <th > nutrition-score-fr_100g</th>
+                <th > nutrition-score-uk_100g</th>
+                <th > glycemic-index_100g</th>
+                <th > water-hardness_100g</th>
+                <th > choline_100g</th>
+                <th > phylloquinone_100g</th>
+                <th > beta-glucan_100g</th>
+                <th > inositol_100g</th>
+                <th > carnitine_100g</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="p in productList | limitTo:visibleProductCount track by $index" >
+                  <th scope="row">{{$index + 1}}</th>
+                  <td ng-bind="p.name" style="width:100px;" > name</td>
+
+                  <td ng-bind="p.n_additives" > n_additives</td>
+                  <td ng-bind="p.nutriscore" > nutriscore</td>
+                  <td ng-bind="p.energy_100g" > energy_100g</td>
+                  <td ng-bind="p.energy-from-fat_100g" > energy-from-fat_100g</td>
+                  <td ng-bind="p.fat_100g" > fat_100g</td>
+                  <td ng-bind="p.saturated-fat_100g" > saturated-fat_100g</td>
+                  <td ng-bind="p.monounsaturated-fat_100g" > monounsaturated-fat_100g</td>
+                  <td ng-bind="p.polyunsaturated-fat_100g" > polyunsaturated-fat_100g</td>
+                  <td ng-bind="p.omega-3-fat_100g" > omega-3-fat_100g</td>
+                  <td ng-bind="p.omega-6-fat_100g" > omega-6-fat_100g</td>
+                  <td ng-bind="p.omega-9-fat_100g" > omega-9-fat_100g</td>
+                  <td ng-bind="p.trans-fat_100g" > trans-fat_100g</td>
+                  <td ng-bind="p.cholesterol_100g" > cholesterol_100g</td>
+                  <td ng-bind="p.carbohydrates_100g" > carbohydrates_100g</td>
+                  <td ng-bind="p.sugars_100g" > sugars_100g</td>
+                  <td ng-bind="p.starch_100g" > starch_100g</td>
+                  <td ng-bind="p.polyols_100g" > polyols_100g</td>
+                  <td ng-bind="p.fiber_100g" > fiber_100g</td>
+                  <td ng-bind="p.proteins_100g" > proteins_100g</td>
+                  <td ng-bind="p.casein_100g" > casein_100g</td>
+                  <td ng-bind="p.serum-proteins_100g" > serum-proteins_100g</td>
+                  <td ng-bind="p.nucleotides_100g" > nucleotides_100g</td>
+                  <td ng-bind="p.salt_100g" > salt_100g</td>
+                  <td ng-bind="p.sodium_100g" > sodium_100g</td>
+                  <td ng-bind="p.alcohol_100g" > alcohol_100g</td>
+                  <td ng-bind="p.vitamin-a_100g" > vitamin-a_100g</td>
+                  <td ng-bind="p.beta-carotene_100g" > beta-carotene_100g</td>
+                  <td ng-bind="p.vitamin-d_100g" > vitamin-d_100g</td>
+                  <td ng-bind="p.vitamin-e_100g" > vitamin-e_100g</td>
+                  <td ng-bind="p.vitamin-k_100g" > vitamin-k_100g</td>
+                  <td ng-bind="p.vitamin-c_100g" > vitamin-c_100g</td>
+                  <td ng-bind="p.vitamin-b1_100g" > vitamin-b1_100g</td>
+                  <td ng-bind="p.vitamin-b2_100g" > vitamin-b2_100g</td>
+                  <td ng-bind="p.vitamin-pp_100g" > vitamin-pp_100g</td>
+                  <td ng-bind="p.vitamin-b6_100g" > vitamin-b6_100g</td>
+                  <td ng-bind="p.vitamin-b9_100g" > vitamin-b9_100g</td>
+                  <td ng-bind="p.folates_100g" > folates_100g</td>
+                  <td ng-bind="p.vitamin-b12_100g" > vitamin-b12_100g</td>
+                  <td ng-bind="p.biotin_100g" > biotin_100g</td>
+                  <td ng-bind="p.pantothenic-acid_100g" > pantothenic-acid_100g</td>
+                  <td ng-bind="p.silica_100g" > silica_100g</td>
+                  <td ng-bind="p.bicarbonate_100g" > bicarbonate_100g</td>
+                  <td ng-bind="p.potassium_100g" > potassium_100g</td>
+                  <td ng-bind="p.chloride_100g" > chloride_100g</td>
+                  <td ng-bind="p.calcium_100g" > calcium_100g</td>
+                  <td ng-bind="p.hosphorus_100g" > phosphorus_100g</td>
+                  <td ng-bind="p.iron_100g" > iron_100g</td>
+                  <td ng-bind="p.magnesium_100g" > magnesium_100g</td>
+                  <td ng-bind="p.zinc_100g" > zinc_100g</td>
+                  <td ng-bind="p.copper_100g" > copper_100g</td>
+                  <td ng-bind="p.manganese_100g" > manganese_100g</td>
+                  <td ng-bind="p.fluoride_100g" > fluoride_100g</td>
+                  <td ng-bind="p.selenium_100g" > selenium_100g</td>
+                  <td ng-bind="p.chromium_100g" > chromium_100g</td>
+                  <td ng-bind="p.molybdenum_100g" > molybdenum_100g</td>
+                  <td ng-bind="p.iodine_100g" > iodine_100g</td>
+                  <td ng-bind="p.caffeine_100g" > caffeine_100g</td>
+                  <td ng-bind="p.taurine_100g" > taurine_100g</td>
+                  <td ng-bind="p.ph_100g" > ph_100g</td>
+                  <td ng-bind="p.fruits-vegetables-nuts_100g" > fruits-vegetables-nuts_100g</td>
+                  <td ng-bind="p.fruits-vegetables-nuts-estimate_100g" > fruits-vegetables-nuts-estimate_100g</td>
+                  <td ng-bind="p.collagen-meat-protein-ratio_100g" > collagen-meat-protein-ratio_100g</td>
+                  <td ng-bind="p.cocoa_100g" > cocoa_100g</td>
+                  <td ng-bind="p.chlorophyl_100g" > chlorophyl_100g</td>
+                  <td ng-bind="p.carbon-footprint_100g" > carbon-footprint_100g</td>
+                  <td ng-bind="p.nutrition-score-fr_100g" > nutrition-score-fr_100g</td>
+                  <td ng-bind="p.nutrition-score-uk_100g" > nutrition-score-uk_100g</td>
+                  <td ng-bind="p.glycemic-index_100g" > glycemic-index_100g</td>
+                  <td ng-bind="p.water-hardness_100g" > water-hardness_100g</td>
+                  <td ng-bind="p.choline_100g" > choline_100g</td>
+                  <td ng-bind="p.phylloquinone_100g" > phylloquinone_100g</td>
+                  <td ng-bind="p.beta-glucan_100g" > beta-glucan_100g</td>
+                  <td ng-bind="p.inositol_100g" > inositol_100g</td>
+                  <td ng-bind="p.carnitine_100g" > carnitine_100g</td>
+
+                </tr>
+            </tbody>
+          </table>
+      </div>
+    </div>
+
+
+    <hr />
+
+    <div class="row">
+      <div id="control-container" class="col solid-border">
+        <div class="col">
+          <div style=" margin-left:200px; margin-right:100px;">
+            <button type="button" class="btn btn-link" ng-click="showColumnSelectionModal()">Select Columns</button>
+            <rzslider rz-slider-model="slider2.min" rz-slider-high="slider2.max"  rz-slider-options="slider2.options" ></rzslider>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="row" style="margin-top:10px;">
+      <div class="col">
+        <button type="button" class="btn btn-primary btn-block">Create New Graph</button>
+      </div>
+    </div>
+
+
+    <div id="product-selection-modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Product Category Selection</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <div class="row" style="margin-top:10px; height:600px;">
+              <div class="table-container" >
+
+                <table class="table table-striped selectable-table" >
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Category Name</th>
+                      <th scope="col">Number of Products</th>
+                    </tr>
+                  </thead>
+                  <tbody >
+                    <tr ng-repeat="category in categories" ng-click="selectProductCategory(category.categoryName)">
+                      <th scope="row">{{$index + 1}}</th>
+                      <td>{{category.categoryName}}</td>
+                      <td>{{category.numberOfProducts}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+
+
+
+    <div id="column-selection-modal" class="modal fade bd-example-modal-lg" tabindex="-2" role="dialog"  aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Product Data Column Selection</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <div class="row" style="margin-top:10px; height:600px;">
+              <div class=" col table-container" >
+
+                <table class="table table-striped" >
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Column Name</th>
+                      <th scope="col">Selection</th>
+                    </tr>
+                  </thead>
+                  <tbody >
+                    <tr ng-repeat="column in columns track by $index">
+                      <th scope="row">{{$index + 1}}</th>
+                      <td>{{column.name}}</td>
+                      <td><input type="checkbox" ng-model="column.isVisible"></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <div id="message-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Information</h5>
+          </div>
+          <div class="modal-body">
+            <div id="message-div" class="alert alert-success" role="alert">
+            </div>
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+</body>
+
+
+
+
+<script type="text/javascript">
+
+  var app = angular.module("myApp", ["rzModule"]);
+  app.controller("myCtrl", function($scope,$window,$http,$timeout) {
+
+      $scope.getNumber = function(num) {
+        var array = [];
+        for(var i = 0; i< 30; i++){
+          array.push(i);
+        }
+          return array;
+      }
+
+      $scope.slider2 = {
+      min: 10,
+      max: 500,
+      options: {
+          id : "slider-x",
+          floor: 10,
+          ceil: 500,
+          vertical: false
+        }
+      };
+
+
+    var messageCount = 0;
+    const messageDiv = document.getElementById('message-div');
+    function showProgressMessage(message){
+        $timeout(function(){
+            messageDiv.innerHTML = message;
+            $('#message-modal').modal('toggle');
+            messageCount++;
+        });
+    }
+
+    function hideProgressMessage(){
+      $timeout(function(){
+        messageCount--;
+        if(messageCount === 0){
+          $('#message-modal').modal('toggle');
+        }
+      });
+    }
+
+
+    $scope.visibleProductCount = 0;
+    jQuery(function($) {
+        $('#table-container').on('scroll', function() {
+            if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+                console.log('end reached');
+                $timeout(function(){
+                    $scope.visibleProductCount = $scope.visibleProductCount + 100;
+                }, 0);
+            }
+        })
+    });
+
+
+
+    $scope.getColumnValue = function(p,column){
+        console.log(p[column]);
+        return p[column];
+    }
+
+    $scope.showColumnSelectionModal = function(){
+      $('#column-selection-modal').modal('toggle');
+      console.log("Columns : " + $scope.columns);
+    }
+
+    $scope.productList = [];
+    function recalculateProductList(productCategoryName){
+
+      const localArray = [];
+      //$scope.productList = [];
+      var productCodeList = $scope.productCategory[productCategoryName];
+      console.log("Selected category name : " + productCategoryName + " size : " + productCodeList.length);
+
+      productCodeList.forEach(function(productCode) {
+            localArray.push($scope.products[productCode])
+      });
+
+      $scope.productList = localArray;
+      $scope.visibleProductCount = 100;
+    }
+
+
+    $scope.selectedCategoryName;
+    $scope.selectProductCategory = function(categoryName){
+      $scope.selectedCategoryName = categoryName;
+      $('#product-selection-modal').modal('toggle');
+      recalculateProductList($scope.selectedCategoryName);
+    }
+
+    $scope.sortByCategorName = false;
+    $scope.productCategory = {};
+    $scope.categories;
+
+    function createOrderedcategories(){
+      $scope.categories = Object.entries($scope.productCategory).map( ([key, value]) => ({ categoryName : key, numberOfProducts: value.length }) )
+      $scope.categories.sort(function(a,b){
+        if (a.numberOfProducts > b.numberOfProducts)
+          return -1;
+        if (a.numberOfProducts < b.numberOfProducts)
+          return 1;
+        return 0;
+      });
+    }
+
+    function addToCategory(productCode, categoryName){
+      if(!$scope.productCategory[categoryName]){
+        $scope.productCategory[categoryName] = [];
+      }
+      $scope.productCategory[categoryName].push(productCode);
+    }
+
+    function parseProductCategoryFile(data){
+        var lines = data.split("\n");
+        //removes header line
+        lines.shift();
+        lines.forEach(function(line) {
+            var tokens = line.split("\t");
+            addToCategory(tokens[0],tokens[1]);
+        });
+
+        createOrderedcategories();
+        console.log("End of prodect categories file parse");
+    }
+
+
+    function loadProductCategoryData(){
+      showProgressMessage("Loading Data");
+      $http.get("./tsv/products_categories_full.tsv")
+      .then(function(response) {
+          parseProductCategoryFile(response.data);
+          hideProgressMessage();
+      });
+    }
+
+    loadProductCategoryData();
+
+    /////////////////////////////////
+    /////////////////////////////////
+
+    $scope.columns = [];
+    $scope.products = {};
+
+    function parseProductFile(data){
+        var lines = data.split("\n");
+        //removes header line
+        const columns = lines.shift().split("\t");
+
+        columns.forEach((c)=>{console.log(c)});
+
+        columns.forEach(function(column){
+          $scope.columns.push({name : column, isVisible : false});
+        })
+
+        lines.forEach(function(line) {
+            var tokens = line.split("\t");
+            var obj = {};
+            for(var i = 0; i < tokens.length; i++){
+              obj[columns[i]] = tokens[i];
+            }
+            $scope.products[obj.code] = obj;
+        });
+
+        createOrderedcategories();
+        console.log("End of product list parse");
+    }
+
+
+    function loadProductData(){
+      showProgressMessage("Loading Data");
+      $http.get("./tsv/products.tsv")
+      .then(function(response) {
+          parseProductFile(response.data);
+          hideProgressMessage();
+      });
+    }
+
+    loadProductData();
+
+  });
+
+
+</script>
+
+</html>
