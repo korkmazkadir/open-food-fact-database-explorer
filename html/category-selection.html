@@ -1,0 +1,244 @@
+<html>
+
+<head>
+
+  <!-- Jquery -->
+
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+    crossorigin="anonymous"></script>
+
+  <!-- Bootstrap -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js" integrity="sha384-pjaaA8dDz/5BgdFUPX6M/9SUZv4d12SUPF0axWc+VRZkx5xU3daN+lYb49+Ax+Tl" crossorigin="anonymous"></script>
+
+  <!-- AngularJS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
+  <!-- Angular JS Slider -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.6.0/rzslider.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.6.0/rzslider.min.js"></script>
+
+  <!-- Fontawesom -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
+
+  <!-- D3 (Local) -->
+  <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" type="text/css" href="../static/css/category-selection.css" />
+
+  <title>Open Food Fact Data Selection</title>
+</head>
+
+<body>
+  <div id="app-container" class="container" ng-app="myApp" ng-controller="myCtrl">
+
+    <div class="row">
+        <div class="col-1">
+        </div>
+        <div class="col-11">
+          <h1 align="center" style="margin-top : 20px;" >Open Food Fact Data Selection</h1>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+      <div class="col">
+        <div class="form-group">
+
+          <button id="category-selection-button" type="button" class="btn btn-info btn-block" data-toggle="modal" data-target=".bd-example-modal-lg">{{ selectedCategoryName ? selectedCategoryName : "Select a product category" }}</button>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <div class="col" align="center" ng-show="selectedFilter">
+
+          <span style=" font-size:1em; text-align:center; background-color:#FFFF9D; padding:5px; width:50%;" >
+
+          <span>{{selectedFilter.min}}</span> <span class="fas fa-less-than-equal" aria-hidden="true"> <span> {{selectedColumn}} </span> <span class="fas fa-less-than-equal" aria-hidden="true"></span> <span>{{selectedFilter.max}}</span>
+
+          <button type="button" class="close-button" aria-label="Close" ng-click="deleteFilter()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+
+      </div>
+
+      <div class="col" align="center">
+          <span><b># Products {{productCount}}</b></span>
+      </div>
+
+    </div>
+
+
+    <div class="row" style="margin-top:10px; height:550px;">
+      <div id="table-container" class="col table-container">
+          <table class="table table-striped selectable-table" align="right" >
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th class="selectable-column"
+                    ng-class=" selectedColumn == column.name ? 'selected-column' : '' "
+                    ng-click="selectColumn(column.name);"
+                    ng-repeat="column in columns"
+                    ng-show="column.isVisible"><span ng-show="isFilterIconVisible(column.name)" class="fa fa-filter" aria-hidden="true"></span>{{column.name}}</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="product in visibleProductList track by $index" ng-click="openProductPage(product.code)">
+                  <th scope="row">{{$index + 1}}</th>
+                  <td ng-repeat="column in columns" ng-bind="getColumnValue($parent.product,column) " ng-show="column.isVisible"></td>
+                </tr>
+            </tbody>
+          </table>
+      </div>
+    </div>
+
+
+    <hr />
+
+    <div id="control-container" class="row solid-border">
+
+        <div class="col-9" >
+            <rzslider ng-show="selectedColumn" rz-slider-model="slider2.min" rz-slider-high="slider2.max"  rz-slider-options="slider2.options" ></rzslider>
+        </div>
+
+        <div class="col-3">
+          <button type="button" class="btn btn-link btn-block" ng-click="showColumnSelectionModal()">Select Columns</button>
+        </div>
+
+    </div>
+
+    <hr />
+
+    <div class="row" style="margin-top:10px;">
+      <div class="col">
+        <button type="button" class="btn btn-primary btn-block" ng-click="createPlot()">Create New Graph</button>
+      </div>
+    </div>
+
+
+    <div id="product-selection-modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Product Category Selection</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <div class="row" style="margin-top:10px; height:600px;">
+              <div class="table-container" >
+
+                <table class="table table-striped selectable-table" >
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Category Name</th>
+                      <th scope="col">Number of Products</th>
+                    </tr>
+                  </thead>
+                  <tbody >
+                    <tr ng-repeat="category in categories" ng-click="selectProductCategory(category.categoryName)">
+                      <th scope="row">{{$index + 1}}</th>
+                      <td>{{category.categoryName}}</td>
+                      <td>{{category.numberOfProducts}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+
+
+    <div id="column-selection-modal" class="modal fade bd-example-modal-lg" tabindex="-2" role="dialog"  aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Product Data Column Selection</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <div class="row" style="margin-top:10px; height:600px;">
+              <div class=" col table-container" >
+
+                <table class="table table-striped" >
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Column Name</th>
+                      <th scope="col">Selected</th>
+                      <th scope="col">Availability</th>
+                    </tr>
+                  </thead>
+                  <tbody >
+                    <tr ng-repeat="column in columns track by $index" ng-class=" isColumnDisabled(column) ? 'disabled' : '' ">
+                      <th scope="row">{{$index + 1}}</th>
+                      <td>{{column.name}}</td>
+                      <td><input type="checkbox" ng-model="column.isVisible"></td>
+                      <td>{{column.availableRowCount}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <div id="message-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Information</h5>
+          </div>
+          <div class="modal-body">
+            <div id="message-div" class="alert alert-success" role="alert">
+            </div>
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<!-- Custom JS -->
+<script src="../static/js/category-selection.js"></script>
+
+</body>
+
+</html>

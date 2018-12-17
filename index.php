@@ -1,1 +1,1 @@
-<?php header( 'Location: /category-selection.html' ) ;  ?>
+<?php header( 'Location: /html/category-selection.html' ) ;  ?>

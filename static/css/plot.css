@@ -1,0 +1,37 @@
+.chart {
+
+}
+
+.main text {
+  font: 10px sans-serif;
+}
+
+.axis line, .axis path {
+  shape-rendering: crispEdges;
+  stroke: black;
+  fill: none;
+}
+
+.zoom-icon{
+  cursor: pointer;
+}
+
+.plot{
+  cursor: pointer;
+}
+
+.selected-plot{
+  stroke: #B22F00;
+}
+
+circle {
+  fill: steelblue;
+}
+
+.axis-label{
+  font-size: 1.1em !important;
+}
+
+#age-slider-container{
+  height: 70px;
+}

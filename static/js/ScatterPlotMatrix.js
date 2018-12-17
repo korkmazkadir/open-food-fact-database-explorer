@@ -67,7 +67,7 @@ function ScatterPlotMatrix(rootElementId,width,height){
         .append('svg:image')
           .attr('height',30)
           .attr('width',30)
-          .attr('href','./static/img/icons8-expand-50.png')
+          .attr('href','../static/img/icons8-expand-50.png')
           .attr('class','zoom-icon')
           .attr('transform','translate(' + (width - 30) + ',' + 2 + ')')
             .on("click", function(){
@@ -75,12 +75,12 @@ function ScatterPlotMatrix(rootElementId,width,height){
               console.log("Plot index : " + plotIndex);
               const clicked = d3.select(this);
               if(isZoomIn){
-                clicked.attr('href', './static/img/icons8-expand-50.png');
+                clicked.attr('href', '../static/img/icons8-expand-50.png');
                 zoomOut();
               }else{
                 d3.select('rect.selected-plot').attr('class','');
                 d3.select('#rect-' + plotIndex).attr("class", "selected-plot");
-                clicked.attr('href', './static/img/icons8-collapse-50.png');
+                clicked.attr('href', '../static/img/icons8-collapse-50.png');
                 zoomIn(plotIndex);
               }
             });
