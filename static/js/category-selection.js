@@ -53,10 +53,11 @@ app.controller("myCtrl", function($scope,$window,$http,$timeout) {
   $scope.$watch('visibleProductCount', calculateVisibleProductList);
 
   $scope.productCount = 0;
+  var filteredProductList;
   function calculateVisibleProductList (){
 
       //Copys old array to new array
-      var filteredProductList = $scope.productList.slice();
+      filteredProductList = $scope.productList.slice();
 
       console.log("(Before) filters : number of products : " + filteredProductList.length);
 
@@ -109,8 +110,12 @@ app.controller("myCtrl", function($scope,$window,$http,$timeout) {
   }
 
   $scope.createPlot = function(){
-      $window.open('./plot.html', '_blank');
+      const graphWindow = $window.open('./plot.html', '_blank');
+      graphWindow.addEventListener('load',()=>{
+          graphWindow.initializePlotPage(filteredProductList, $scope.selectedCategoryName);
+      });
   }
+
 
   $scope.getColumnValue = function(product, column){
       return product[column.name];

@@ -1,5 +1,17 @@
+
 const scatterPlotMatrix = new ScatterPlotMatrix("chart-container",850,650);
 scatterPlotMatrix.plotAll();
+
+function initializePlotPage(data,categoryName){
+  console.log("Data is : " + data.length);
+  scatterPlotMatrix.plot(1,data,"carbohydrates_100g","energy_100g");
+  scatterPlotMatrix.plot(2,data,"proteins_100g","energy_100g");
+  scatterPlotMatrix.plot(3,data,"fat_100g","energy_100g");
+  scatterPlotMatrix.plot(4,data,"fiber_100g","energy_100g");
+  var elementCategoryName = document.getElementById("category-name");
+  elementCategoryName.innerHTML = categoryName;
+}
+
 
 var app = angular.module("myApp", ["rzModule"]);
 app.controller("myCtrl", function($scope,$window) {

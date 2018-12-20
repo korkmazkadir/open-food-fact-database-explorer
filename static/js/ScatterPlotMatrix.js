@@ -7,8 +7,8 @@ function ScatterPlotMatrix(rootElementId,width,height){
       plots.plot4.plot();
     }
 
-    this.plot = function(plotIndex){
-      plots["plot" + plotIndex].plot();
+    this.plot = function(plotIndex,data,xColumn,yColumn){
+      plots["plot" + plotIndex].plot(data,xColumn,yColumn);
     }
 
     var isZoomIn = false;
