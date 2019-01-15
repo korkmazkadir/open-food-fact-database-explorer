@@ -11,6 +11,23 @@ function ScatterPlotMatrix(rootElementId,width,height){
       plots["plot" + plotIndex].plot(data,xColumn,yColumn);
     }
 
+
+    this.updatePlot = function(plotIndex, xMin, xMax, yMin, yMax){
+      plots["plot" + plotIndex].updatePlot(xMin, xMax, yMin, yMax);
+    }
+
+    var plotSelectedEventListener;
+    this.setPlotSelectedEventListener = function(listener){
+      plotSelectedEventListener = listener;
+    }
+
+    function invokeListeners(plotIndex){
+      if(plotSelectedEventListener){
+        plotSelectedEventListener(plotIndex);
+      }
+    }
+
+
     var isZoomIn = false;
 
     const rootElement = d3.select("#"+rootElementId).append('svg:svg')
@@ -59,6 +76,7 @@ function ScatterPlotMatrix(rootElementId,width,height){
           .on("click", function(){
             d3.select('rect.selected-plot').attr('class','');
             d3.select(this).attr("class", "selected-plot");
+            invokeListeners(plotIndex);
           });;
 
       container.append('svg:g')
@@ -82,6 +100,7 @@ function ScatterPlotMatrix(rootElementId,width,height){
                 d3.select('#rect-' + plotIndex).attr("class", "selected-plot");
                 clicked.attr('href', '../static/img/icons8-collapse-50.png');
                 zoomIn(plotIndex);
+                invokeListeners(plotIndex);
               }
             });
 

@@ -2,6 +2,44 @@ function ScatterPlot(rootGroupElementId){
     console.log("Creating Scatter Plot");
     this.rootElement = d3.select("#"+rootGroupElementId);
 
+    this.updatePlot = function(x_min, x_max, y_min, y_max){
+
+      x.domain([x_min, x_max]);
+      chart.select(".x")
+      .transition()
+        .call(xAxis);
+
+      y.domain([y_min, y_max]);
+      chart.select(".y")
+      .transition()
+        .call(yAxis);
+
+      circles.transition()
+            .attr("cx", function (d,i) { return x(d[plotXColumn]); } )
+            .attr("cy", function (d) { return y(d[plotYColumn]); } )
+            .style("visibility", function (d) {
+              if( d[plotXColumn] >= x_min &&
+                  d[plotXColumn] <= x_max &&
+                  d[plotYColumn] >= y_min &&
+                  d[plotYColumn] <= y_max){
+                return "visible";
+              }else{
+                return "hidden";
+              }
+            });
+
+    }
+
+    var x;
+    var y;
+    var xAxis;
+    var yAxis;
+    var chart;
+    var g;
+    var plotData;
+    var plotXColumn;
+    var plotYColumn;
+    var circles;
 
     this.plot = function(data,xColumn,yColumn){
 
@@ -11,23 +49,36 @@ function ScatterPlot(rootGroupElementId){
         return;
       }
 
+      plotData = data;
+      plotXColumn = xColumn;
+      plotYColumn = yColumn;
+
+      console.log("Data size : " + data.length);
 
       var margin = {top: 20, right: 15, bottom: 60, left: 60}
         , width = 800 - margin.left - margin.right
         , height = 600 - margin.top - margin.bottom;
 
-      var x = d3.scale.linear()
-                .domain([0, d3.max(data, function(d) { return d[xColumn]; })])
+      x = d3.scale.linear()
+                .domain([d3.min(data, function(d) {
+                  return d[xColumn];
+                }), d3.max(data, function(d) {
+                  return d[xColumn];
+                })])
                 .range([ 0, width ]);
 
-      var y = d3.scale.linear()
-              .domain([0, d3.max(data, function(d) { return d[yColumn]; })])
+      y = d3.scale.linear()
+              .domain([d3.min(data, function(d) {
+                return d[yColumn];
+              }), d3.max(data, function(d) {
+                return d[yColumn];
+              })])
               .range([ height, 0 ]);
 
-      var chart = this.rootElement
+      chart = this.rootElement
         .attr('width', width + margin.right + margin.left)
         .attr('height', height + margin.top + margin.bottom)
-        .attr('class', 'chart')
+        .attr('class', 'chart' + rootGroupElementId)
 
       var main = chart.append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
@@ -36,13 +87,13 @@ function ScatterPlot(rootGroupElementId){
         .attr('class', 'main')
 
       // draw the x axis
-      var xAxis = d3.svg.axis()
+      xAxis = d3.svg.axis()
         .scale(x)
         .orient('bottom');
 
       main.append('g')
         .attr('transform', 'translate(0,' + height + ')')
-        .attr('class', 'main axis date')
+        .attr('class', 'x main axis date')
         .call(xAxis);
 
       // text label for the x axis
@@ -55,13 +106,13 @@ function ScatterPlot(rootGroupElementId){
           .text(xColumn);
 
       // draw the y axis
-      var yAxis = d3.svg.axis()
+      yAxis = d3.svg.axis()
         .scale(y)
         .orient('left');
 
       main.append('g')
         .attr('transform', 'translate(0,0)')
-        .attr('class', 'main axis date')
+        .attr('class', 'y main axis date')
         .call(yAxis);
 
       // text label for the y axis
@@ -75,10 +126,10 @@ function ScatterPlot(rootGroupElementId){
           .text(yColumn);
 
 
-      var g = main.append("svg:g");
+      g = main.append("svg:g");
 
 
-      g.selectAll("scatter-dots")
+      circles = g.selectAll("scatter-dots")
         .data(data)
         .enter().append("svg:circle")
             .attr("cx", function (d,i) { return x(d[xColumn]); } )
