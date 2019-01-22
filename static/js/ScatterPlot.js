@@ -4,20 +4,42 @@ function ScatterPlot(rootGroupElementId){
 
     this.updatePlot = function(x_min, x_max, y_min, y_max){
 
-      x.domain([x_min, x_max]);
-      chart.select(".x")
-      .transition()
-        .call(xAxis);
+      if(x_min != -1 && x_max!= -1){
+        console.log("->X axis");
+        x.domain([x_min, x_max]);
+        chart.select(".x")
+        .transition()
+          .call(xAxis);
+      }
 
-      y.domain([y_min, y_max]);
-      chart.select(".y")
-      .transition()
-        .call(yAxis);
+      if(y_min != -1 && y_max!= -1){
+        console.log("->Y axis");
+        y.domain([y_min, y_max]);
+        chart.select(".y")
+        .transition()
+          .call(yAxis);
+      }
+
+
+      var predicates = Object.getOwnPropertyNames(visibilityPredicatesLocal).filter(function (p) {
+          return typeof visibilityPredicatesLocal[p] === 'function';
+      });
 
       circles.transition()
             .attr("cx", function (d,i) { return x(d[plotXColumn]); } )
             .attr("cy", function (d) { return y(d[plotYColumn]); } )
             .style("visibility", function (d) {
+
+              var i;
+              for (i = 0; i < predicates.length; i++) {
+                if(visibilityPredicatesLocal[predicates[i]](d) === false){
+                  return "hidden";
+                }
+              }
+
+              return "visible";
+
+              /*
               if( d[plotXColumn] >= x_min &&
                   d[plotXColumn] <= x_max &&
                   d[plotYColumn] >= y_min &&
@@ -26,9 +48,45 @@ function ScatterPlot(rootGroupElementId){
               }else{
                 return "hidden";
               }
+              */
+
             });
 
     }
+
+
+    this.updateDotVisibilities = function(){
+      var predicates = Object.getOwnPropertyNames(visibilityPredicatesLocal).filter(function (p) {
+          return typeof visibilityPredicatesLocal[p] === 'function';
+      });
+
+      circles.transition()
+            .style("visibility", function (d) {
+              var i;
+              for (i = 0; i < predicates.length; i++) {
+                if(visibilityPredicatesLocal[predicates[i]](d) === false){
+                  return "hidden";
+                }
+              }
+              return "visible";
+            });
+    }
+
+    var visibilityPredicatesLocal = {};
+    this.setVisibilityPredicates = function( visibilityPredicates ){
+      visibilityPredicatesLocal = visibilityPredicates;
+    }
+
+    this.updatePlotXAxis = function(min, max){
+      console.log("X axis updated");
+      this.updatePlot(min,max,-1,-1);
+    }
+
+    this.updatePlotYAxis = function(min, max){
+      console.log("Y axis updated");
+      this.updatePlot(-1,-1,min,max);
+    }
+
 
     var x;
     var y;

@@ -11,10 +11,28 @@ function ScatterPlotMatrix(rootElementId,width,height){
       plots["plot" + plotIndex].plot(data,xColumn,yColumn);
     }
 
-
+    /*
     this.updatePlot = function(plotIndex, xMin, xMax, yMin, yMax){
       plots["plot" + plotIndex].updatePlot(xMin, xMax, yMin, yMax);
     }
+    */
+
+    this.updateDotVisibilities = function(plotIndex){
+      plots["plot" + plotIndex].updateDotVisibilities( );
+    }
+
+    this.setVisibilityPredicates = function(plotIndex,visibilityPredicates){
+      plots["plot" + plotIndex].setVisibilityPredicates( visibilityPredicates );
+    }
+
+    this.updatePlotXAxis = function(plotIndex, min, max){
+      plots["plot" + plotIndex].updatePlotXAxis( min, max);
+    }
+
+    this.updatePlotYAxis = function(plotIndex,  min, max){
+      plots["plot" + plotIndex].updatePlotYAxis( min, max);
+    }
+
 
     var plotSelectedEventListener;
     this.setPlotSelectedEventListener = function(listener){

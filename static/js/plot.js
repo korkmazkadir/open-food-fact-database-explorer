@@ -31,32 +31,86 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
 
 
     $scope.resetPlot = function(){
+      console.log("Reset!");
+
+      visibilityPredicates = {};
+
+      $scope.columns.forEach((c)=>{
+        if(c.isChanged === true){
+          c.sliderMin = c.min;
+          c.sliderMax = c.max;
+          updatePlots(c);
+          c.isChanged = false;
+        }
+      })
+
+      $scope.sliderX.min = $scope.columnX.sliderMin;
+      $scope.sliderX.max = $scope.columnX.sliderMax;
+      $scope.sliderY.min = $scope.columnY.sliderMin;
+      $scope.sliderY.max = $scope.columnY.sliderMax;
 
     };
 
+
+    var updatedPlots = [];
+    function updateDotVisibilities(){
+      for(var i = 1; i < 5; i++ ){
+        if(updatedPlots.indexOf(i) === -1){
+          console.log("Udpateing plot : " + i);
+          scatterPlotMatrix.updateDotVisibilities(i);
+        }
+      }
+      updatedPlots = [];
+    }
 
     function updatePlots(changedColumn){
 
       for(var i = 1; i < 5; i++ ){
         const axis = plotAxises["plot"+i];
-        if(axis.x === changedColumn.name || axis.y === changedColumn.name){
-          scatterPlotMatrix.updatePlot(
+
+        scatterPlotMatrix.setVisibilityPredicates(i,visibilityPredicates);
+
+        if(axis.x === changedColumn.name){
+          updatedPlots.push(i);
+          scatterPlotMatrix.updatePlotXAxis(
             i,
-            $scope.columnX.sliderMin,
-            $scope.columnX.sliderMax,
-            $scope.columnY.sliderMin,
-            $scope.columnY.sliderMax
+            changedColumn.sliderMin,
+            changedColumn.sliderMax
+          );
+        }else if(axis.y === changedColumn.name){
+          updatedPlots.push(i);
+          scatterPlotMatrix.updatePlotYAxis(
+            i,
+            changedColumn.sliderMin,
+            changedColumn.sliderMax
           );
         }
-      }
 
+      }
+      updateDotVisibilities();
     }
+
+
+    var visibilityPredicates = {};
+
+    function addVisibilityPredicate(columnName, min, max){
+      console.log("Adding predicate : " + columnName);
+      visibilityPredicates[columnName] = function(product){
+           if(product[columnName] >= min && product[columnName] <= max){
+             return true;
+           }
+           return false;
+      };
+    }
+
 
     function filterY(){
       if($scope.columnX){
         $scope.columnX.sliderMin = $scope.sliderX.min;
         $scope.columnX.sliderMax = $scope.sliderX.max;
+        addVisibilityPredicate($scope.columnX.name, $scope.columnX.sliderMin, $scope.columnX.sliderMax );
         updatePlots($scope.columnX);
+        $scope.columnX.isChanged = true;
       }
     }
 
@@ -64,7 +118,9 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
       if($scope.columnY){
         $scope.columnY.sliderMin = $scope.sliderY.min;
         $scope.columnY.sliderMax = $scope.sliderY.max;
+        addVisibilityPredicate($scope.columnY.name, $scope.columnY.sliderMin, $scope.columnY.sliderMax );
         updatePlots($scope.columnY);
+        $scope.columnY.isChanged = true;
       }
     }
 
@@ -121,6 +177,7 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
         c.sliderMax = c.max;
         c.sliderFloor = c.min;
         c.sliderCeil = c.max;
+        c.isChanged = false;
       })
 
       productList.forEach((p)=>{
