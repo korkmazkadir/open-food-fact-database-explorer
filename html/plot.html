@@ -49,8 +49,11 @@
 
           <div id="price-slider-container" class="col-1 solid-border">
 
-            <div style="height:500px; margin-top:10px; margin-bottom:10px;">
-                  <rzslider rz-slider-model="sliderY.min" rz-slider-high="sliderY.max" rz-slider-options="sliderY.options" ></rzslider><br />
+            <div style="height:500px; margin-top:10px; margin-bottom:10px;" >
+                    <div style="width: 20px; margin : 0 auto;">
+                      <rzslider rz-slider-model="sliderY.min" rz-slider-high="sliderY.max" rz-slider-options="sliderY.options" ng-disabled="!selectedPlotIndex"></rzslider>
+                    </div>
+                    <button type="button" class="btn btn-link btn-block" ng-click="changeYAxis()" > {{columnY.name}} </button>
             </div>
 
           </div>
@@ -69,8 +72,9 @@
           </div>
 
           <div class="col-11">
-            <div style=" margin-left:200px; margin-right:100px;">
-              <rzslider rz-slider-model="sliderX.min" rz-slider-high="sliderX.max"  rz-slider-options="sliderX.options" ></rzslider>
+            <div style=" margin-left:200px; margin-right:100px;" >
+              <rzslider rz-slider-model="sliderX.min" rz-slider-high="sliderX.max"  rz-slider-options="sliderX.options" ng-disabled="!selectedPlotIndex"></rzslider>
+              <button type="button" class="btn btn-link btn-block" ng-click="changeXAxis()"> {{columnX.name}} </button>
             </div>
           </div>
         </div>
@@ -81,12 +85,82 @@
 
       </div>
 
-    <hr />
 
-    <div class="row">
-      <div id="control-container" class="col solid-border">
-      </div>
+      <hr style="margin-top:30px; margin-buttom:20px;" />
+
+    <div class="row" align="center">
+
+        <div class="col bg-light text-dark">
+          # products <br /> <b >{{simpleStats.numberOfProduct}}</b>
+        </div>
+        <div class="col bg-light text-dark">
+          # A nutriscore <br /> <b >{{simpleStats.numberOfProduct_a}}</b>
+        </div>
+        <div class="col bg-light text-dark">
+          # B nutriscore <br /> <b  >{{simpleStats.numberOfProduct_b}}</b>
+        </div>
+        <div class="col bg-light text-dark">
+          # C nutriscore <br /> <b  >{{simpleStats.numberOfProduct_c}}</b>
+        </div>
+        <div class="col bg-light text-dark">
+          # D nutriscore <br /> <b >{{simpleStats.numberOfProduct_d}}</b>
+        </div>
+        <div class="col bg-light text-dark">
+          # E nutriscore <br /> <b  >{{simpleStats.numberOfProduct_e}}</b>
+        </div>
+
+        <div class="col bg-light text-dark">
+          # uncategorized <br /> <b >{{simpleStats.numberOfProductUncategorized}}</b>
+        </div>
+
     </div>
+
+    <div id="column-selection-modal" class="modal fade bd-example-modal-lg" tabindex="-2" role="dialog"  aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">{{columnSelectionModalLabel}}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <div class="row" style="margin-top:10px; height:600px;">
+              <div class=" col table-container" >
+
+                <table class="table table-striped selectable-table" >
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Column Name</th>
+                      <th scope="col">Availability</th>
+                    </tr>
+                  </thead>
+                  <tbody >
+                    <tr ng-repeat="column in columns track by $index" ng-click="changeAxis(column.name)" >
+                      <th scope="row">{{$index + 1}}</th>
+                      <td>{{column.name}}</td>
+                      <td>{{column.availableRowCount}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+    </div>
+
 
   </div>
 

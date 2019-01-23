@@ -29,31 +29,37 @@ function ScatterPlot(rootGroupElementId){
             .attr("cx", function (d,i) { return x(d[plotXColumn]); } )
             .attr("cy", function (d) { return y(d[plotYColumn]); } )
             .style("visibility", function (d) {
-
               var i;
               for (i = 0; i < predicates.length; i++) {
                 if(visibilityPredicatesLocal[predicates[i]](d) === false){
                   return "hidden";
                 }
               }
-
               return "visible";
-
-              /*
-              if( d[plotXColumn] >= x_min &&
-                  d[plotXColumn] <= x_max &&
-                  d[plotYColumn] >= y_min &&
-                  d[plotYColumn] <= y_max){
-                return "visible";
-              }else{
-                return "hidden";
-              }
-              */
-
             });
 
     }
 
+
+    this.changeXAxis = function(columnName){
+      xAxisLabel.text(columnName);
+      plotXColumn = columnName;
+      this.updatePlot(d3.min(plotData, function(d) {
+        return d[plotXColumn];
+      }),d3.max(plotData, function(d) {
+        return d[plotXColumn];
+      }),-1,-1);
+    }
+
+    this.changeYAxis = function(columnName){
+      yAxisLabel.text(columnName);
+      plotYColumn = columnName;
+      this.updatePlot(-1,-1,d3.min(plotData, function(d) {
+        return d[plotYColumn];
+      }),d3.max(plotData, function(d) {
+        return d[plotYColumn];
+      }));
+    }
 
     this.updateDotVisibilities = function(){
       var predicates = Object.getOwnPropertyNames(visibilityPredicatesLocal).filter(function (p) {
@@ -61,6 +67,8 @@ function ScatterPlot(rootGroupElementId){
       });
 
       circles.transition()
+      .attr("cx", function (d,i) { return x(d[plotXColumn]); } )
+      .attr("cy", function (d) { return y(d[plotYColumn]); } )
             .style("visibility", function (d) {
               var i;
               for (i = 0; i < predicates.length; i++) {
@@ -78,12 +86,12 @@ function ScatterPlot(rootGroupElementId){
     }
 
     this.updatePlotXAxis = function(min, max){
-      console.log("X axis updated");
+      console.log("X axis updated. min : " + min + " max : " + max );
       this.updatePlot(min,max,-1,-1);
     }
 
     this.updatePlotYAxis = function(min, max){
-      console.log("Y axis updated");
+      console.log("Y axis updated. min : " + min + " max : " + max );
       this.updatePlot(-1,-1,min,max);
     }
 
@@ -98,7 +106,8 @@ function ScatterPlot(rootGroupElementId){
     var plotXColumn;
     var plotYColumn;
     var circles;
-
+    var xAxisLabel;
+    var yAxisLabel;
     this.plot = function(data,xColumn,yColumn){
 
       console.log("Scatter Plot Working");
@@ -155,7 +164,7 @@ function ScatterPlot(rootGroupElementId){
         .call(xAxis);
 
       // text label for the x axis
-      main.append("text")
+      xAxisLabel = main.append("text")
           .attr("transform",
                 "translate(" + (width/2) + " ," +
                                (height + margin.top + 20) + ")")
@@ -174,7 +183,7 @@ function ScatterPlot(rootGroupElementId){
         .call(yAxis);
 
       // text label for the y axis
-      main.append("text")
+      yAxisLabel = main.append("text")
           .attr("transform", "rotate(-90)")
           .attr("y", 1 - margin.left)
           .attr("x",0 - (height / 2))

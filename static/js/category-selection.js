@@ -197,6 +197,12 @@ app.controller("myCtrl", function($scope,$window,$http,$timeout) {
         }
         calculateColumnMinMaxValue(column,product);
       });
+
+
+      $scope.columns.sort(function(a, b) {
+        return b.availableRowCount - a.availableRowCount;
+      });
+
   }
 
   $scope.productList = [];
@@ -313,6 +319,8 @@ app.controller("myCtrl", function($scope,$window,$http,$timeout) {
       });
 
       createOrderedcategories();
+
+
       console.log("End of product list parse");
   }
 

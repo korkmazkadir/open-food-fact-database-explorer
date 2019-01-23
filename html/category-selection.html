@@ -41,7 +41,7 @@
         <div class="col-1">
         </div>
         <div class="col-11">
-          <h1 align="center" style="margin-top : 20px;" >Open Food Fact Data Selection</h1>
+          <h1 align="center" style="margin-top : 20px;" >Open Food Fact Database Explorer</h1>
         </div>
     </div>
 
@@ -194,7 +194,8 @@
                     </tr>
                   </thead>
                   <tbody >
-                    <tr ng-repeat="column in columns track by $index" ng-class=" isColumnDisabled(column) ? 'disabled' : '' ">
+                    <!--<tr ng-repeat="column in columns track by $index" ng-class=" isColumnDisabled(column) ? 'disabled' : '' ">!-->
+                    <tr ng-repeat="column in columns track by $index">
                       <th scope="row">{{$index + 1}}</th>
                       <td>{{column.name}}</td>
                       <td><input type="checkbox" ng-model="column.isVisible"></td>

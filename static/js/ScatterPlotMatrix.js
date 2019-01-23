@@ -17,6 +17,14 @@ function ScatterPlotMatrix(rootElementId,width,height){
     }
     */
 
+    this.changeXAxis = function(plotIndex,columnName){
+        plots["plot" + plotIndex].changeXAxis(columnName);
+    }
+
+    this.changeYAxis = function(plotIndex,columnName){
+        plots["plot" + plotIndex].changeYAxis(columnName);
+    }
+
     this.updateDotVisibilities = function(plotIndex){
       plots["plot" + plotIndex].updateDotVisibilities( );
     }

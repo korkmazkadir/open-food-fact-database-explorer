@@ -30,6 +30,43 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
     };
 
 
+    $scope.changeAxis = function(columnName){
+        console.log("Chaging column : " + columnName);
+        $timeout(function(){
+            $('#column-selection-modal').modal('toggle');
+        });
+        if($scope.changingAxis === "X"){
+          $scope.columnX = findColumnByName(columnName);
+          plotAxises["plot"+$scope.selectedPlotIndex].x = columnName;
+          scatterPlotMatrix.changeXAxis($scope.selectedPlotIndex,columnName);
+        }else{
+          $scope.columnY = findColumnByName(columnName);
+          plotAxises["plot"+$scope.selectedPlotIndex].y = columnName;
+          scatterPlotMatrix.changeYAxis($scope.selectedPlotIndex,columnName);
+        }
+
+        setSliderValues($scope.selectedPlotIndex);
+
+    }
+
+    $scope.changingAxis;
+    $scope.changeXAxis = function(){
+      $scope.changingAxis = "X";
+      $scope.columnSelectionModalLabel = "Change X axis";
+      $timeout(function(){
+          $('#column-selection-modal').modal('toggle');
+      });
+    }
+
+
+    $scope.changeYAxis = function(){
+      $scope.changingAxis = "Y";
+      $scope.columnSelectionModalLabel = "Change Y axis";
+      $timeout(function(){
+          $('#column-selection-modal').modal('toggle');
+      });
+    }
+
     $scope.resetPlot = function(){
       console.log("Reset!");
 
@@ -37,6 +74,7 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
 
       $scope.columns.forEach((c)=>{
         if(c.isChanged === true){
+          console.log("Resets column : " + c.name );
           c.sliderMin = c.min;
           c.sliderMax = c.max;
           updatePlots(c);
@@ -71,13 +109,17 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
         scatterPlotMatrix.setVisibilityPredicates(i,visibilityPredicates);
 
         if(axis.x === changedColumn.name){
+          console.log("Updates plot : " + i + " x axis" );
           updatedPlots.push(i);
           scatterPlotMatrix.updatePlotXAxis(
             i,
             changedColumn.sliderMin,
             changedColumn.sliderMax
           );
-        }else if(axis.y === changedColumn.name){
+        }
+
+        if(axis.y === changedColumn.name){
+          console.log("Updates plot : " + i + " y axis" );
           updatedPlots.push(i);
           scatterPlotMatrix.updatePlotYAxis(
             i,
@@ -87,7 +129,9 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
         }
 
       }
+
       updateDotVisibilities();
+      $scope.calculateStatistics();
     }
 
 
@@ -108,9 +152,9 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
       if($scope.columnX){
         $scope.columnX.sliderMin = $scope.sliderX.min;
         $scope.columnX.sliderMax = $scope.sliderX.max;
+        $scope.columnX.isChanged = true;
         addVisibilityPredicate($scope.columnX.name, $scope.columnX.sliderMin, $scope.columnX.sliderMax );
         updatePlots($scope.columnX);
-        $scope.columnX.isChanged = true;
       }
     }
 
@@ -118,9 +162,9 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
       if($scope.columnY){
         $scope.columnY.sliderMin = $scope.sliderY.min;
         $scope.columnY.sliderMax = $scope.sliderY.max;
+        $scope.columnY.isChanged = true;
         addVisibilityPredicate($scope.columnY.name, $scope.columnY.sliderMin, $scope.columnY.sliderMax );
         updatePlots($scope.columnY);
-        $scope.columnY.isChanged = true;
       }
     }
 
@@ -166,10 +210,59 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
       setSliderValues(plotIndex);
     };
 
+
+    $scope.simpleStats = {
+      numberOfProduct : 0,
+      numberOfProduct_a : 0,
+      numberOfProduct_b : 0,
+      numberOfProduct_c : 0,
+      numberOfProduct_d : 0,
+      numberOfProduct_e : 0,
+      numberOfProductUncategorized : 0
+    };
+
+    $scope.calculateStatistics = function(){
+      $scope.simpleStats.numberOfProduct = 0;
+
+      $scope.simpleStats.numberOfProduct_a = 0;
+      $scope.simpleStats.numberOfProduct_b = 0;
+      $scope.simpleStats.numberOfProduct_c = 0;
+      $scope.simpleStats.numberOfProduct_d = 0;
+      $scope.simpleStats.numberOfProduct_e = 0;
+
+      $scope.simpleStats.numberOfProductUncategorized = 0;
+
+      var predicates = Object.getOwnPropertyNames(visibilityPredicates).filter(function (p) {
+          return typeof visibilityPredicates[p] === 'function';
+      });
+
+      productList.forEach((p)=>{
+
+        for (i = 0; i < predicates.length; i++) {
+          if(visibilityPredicates[predicates[i]](p) === false){
+            return;
+          }
+        }
+
+        $scope.simpleStats.numberOfProduct++;
+
+        if(p["nutriscore"]){
+            $scope.simpleStats["numberOfProduct_" + p["nutriscore"]]++;
+        }else{
+            $scope.simpleStats.numberOfProductUncategorized++;
+        }
+
+      });
+    }
+
+
     const scatterPlotMatrix = new ScatterPlotMatrix("chart-container",850,650);
     var productList;
     var plotAxises = {};
     $scope.initializePlotPage = function(data,categoryName, columns){
+
+      document.title = categoryName;
+
       productList = data;
 
       columns.forEach((c)=>{
@@ -179,6 +272,10 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
         c.sliderCeil = c.max;
         c.isChanged = false;
       })
+
+      columns.sort(function(a, b) {
+        return b.availableRowCount - a.availableRowCount;
+      });
 
       productList.forEach((p)=>{
         p.isVisible = true;
@@ -201,6 +298,12 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
       plotAxises.plot2 = { x : "proteins_100g", y : "energy_100g"}
       plotAxises.plot3 = { x : "fat_100g", y : "energy_100g"}
       plotAxises.plot4 = { x : "fiber_100g", y : "energy_100g"}
+
+
+      $timeout(function(){
+        $scope.calculateStatistics();
+      });
+
     }
 
 
