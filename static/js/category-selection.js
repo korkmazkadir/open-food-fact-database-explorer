@@ -111,7 +111,8 @@ app.controller("myCtrl", function($scope,$window,$http,$timeout) {
 
   $scope.createPlot = function(){
       const graphWindow = $window.open('./plot.html', '_blank');
-      graphWindow.addEventListener('load',()=>{
+      graphWindow.addEventListener('plot-page-ready',(e)=>{
+          console.log("Custom event : " + JSON.stringify(e));
           graphWindow.initializePlotPage(filteredProductList, $scope.selectedCategoryName, $scope.columns);
       });
   }

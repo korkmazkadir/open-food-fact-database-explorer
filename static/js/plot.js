@@ -309,4 +309,8 @@ app.controller("myCtrl", function($scope,$window,$timeout) {
 
     $window.initializePlotPage = $scope.initializePlotPage;
 
+    window.dispatchEvent(
+      new CustomEvent('plot-page-ready', { bubbles: true, detail: { text : Date.now() } })
+    );
+
 });
