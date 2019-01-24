@@ -221,8 +221,10 @@ app.controller("myCtrl", function($scope,$window,$http,$timeout) {
 
     productCodeList.forEach(function(productCode) {
           const product = $scope.products[productCode];
-          localArray.push(product)
-          calculateColumnStatistics(product);
+          if(product){
+            localArray.push(product)
+            calculateColumnStatistics(product);
+          }
     });
 
     $scope.productCount = localArray.length;
