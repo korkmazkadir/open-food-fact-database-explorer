@@ -25,3 +25,9 @@ You can access the online version of the project from following link. The applic
 At the begining it needs to load a big data file(around 32 MB) so it might take some time to load the page.
 
     https://murmuring-waters-16182.herokuapp.com/
+
+
+
+Following file contains slides of the project presentation : 
+    
+    [Slides of the presentation](./open-food-fact-database-explorer-master.pdf)
