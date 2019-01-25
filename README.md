@@ -28,6 +28,6 @@ At the begining it needs to load a big data file(around 32 MB) so it might take 
 
 
 
-Following file contains slides of the project presentation : 
+Following file contains slides of the project presentation(the file is in the repository) :
     
-    [Slides of the presentation](./open-food-fact-database-explorer-master.pdf)
+    open-food-fact-database-explorer-master.pdf
