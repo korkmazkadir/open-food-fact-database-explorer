@@ -20,3 +20,8 @@ The project developed using
  
  Not : For the library source files CDN is used.
  
+
+You can access the online version of the project from following link. The application is deployed on Heroku.
+At the begining it needs to load a big data file(around 32 MB) so it might take some time to load the page.
+
+    https://murmuring-waters-16182.herokuapp.com/
